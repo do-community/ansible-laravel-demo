@@ -1,0 +1,8 @@
+---
+- name: Install Main PHP Packages
+  apt: name={{ item }} update_cache=yes state=latest
+  loop: [ 'php-fpm', 'php-mysql' ]
+
+- name: Install PHP Modules / Extensions
+  apt: name={{ item }} update_cache=yes state=latest
+  loop: "{{ php_packages }}"

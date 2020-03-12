@@ -1,0 +1,38 @@
+---
+- name: Checks if Composer is already installed
+  command: "{{ composer_path }}"
+  ignore_errors: true
+  register: composer_installed
+
+- name: Install Composer if its not already installed
+  block:
+
+    - name: Download Composer Installation Script (if not already installed)
+      get_url:
+        url: https://getcomposer.org/installer
+        dest: /tmp/composer-setup.php
+
+    - name: Run Composer Installer (if not already installed)
+      command:
+        cmd: /usr/bin/php /tmp/composer-setup.php
+        creates: composer.phar
+
+    - name: Copy Composer Executable to /usr/local/bin
+      become: true
+      copy:
+        src: composer.phar
+        dest: /usr/local/bin/composer
+        remote_src: yes
+        mode: '0755'
+
+    - name: Remove phar
+      file:
+        path: composer.phar
+        state: absent
+
+    - name: Remove Install Script
+      file:
+        path: /tmp/composer-setup.php
+        state: absent
+
+  when: composer_installed is failed

@@ -1,0 +1,8 @@
+[dev]
+111.222.333.444
+
+[prod]
+222.111.333.444
+
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3

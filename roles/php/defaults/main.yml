@@ -1,0 +1,6 @@
+---
+php_packages: [ "php-mbstring", "php-bcmath", "php-xml" ]
+php_file_uploads: "On"
+php_upload_max_filesize: "64M"
+php_max_file_uploads: "20"
+php_post_max_size: "32M"

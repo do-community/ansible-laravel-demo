@@ -1,0 +1,54 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: Make sure the remote app root exists and has the right permissions
+
+      file:
+        path: "{{ remote_www_root }}/{{ app_root_dir }}"
+        state: directory
+        mode: '0755'
+        owner: "{{ remote_user }}"
+        group: "{{ remote_user }}"
+
+    - name: Rsync application files to the remote server
+      synchronize:
+        src: "application/{{ app_root_dir }}"
+        dest: "{{ remote_www_root }}"
+        rsync_opts:
+          - "--no-motd"
+          - "--exclude=.git,vendor,tests,storage/logs/*,storage/framework/sessions/*,storage/framework/cache/*"
+
+    - name: Set up additional directory permissions for www-data user on storage folder
+      acl:
+        path: "{{ remote_www_root }}/{{ app_root_dir }}/storage/"
+        entry: group:www-data:rwX
+        recursive: yes
+        state: present
+
+    - name: Set up additional directory permissions for www-data user on bootstrap/cache folder
+      acl:
+        path: "{{ remote_www_root }}/{{ app_root_dir }}/bootstrap/cache/"
+        entry: group:www-data:rwX
+        recursive: yes
+        state: present
+
+    - name: Set up .env file
+      template:
+        src: laravel-env.j2
+        dest: "{{ remote_www_root }}/{{ app_root_dir }}/.env"
+
+    - name: Install Dependencies with Composer
+      become: false
+      composer:
+        command: install
+        working_dir: "{{ remote_www_root }}/{{ app_root_dir }}"
+      tags: [ 'composer:install' ]
+
+    - name: Generate app key
+      command: "/usr/bin/php {{ remote_www_root }}/{{ app_root_dir }}/artisan key:generate"
+      tags: [ 'laravel', 'artisan:key' ]
+
+    - name: Run Migrations + Seeds
+      command: "/usr/bin/php {{ remote_www_root }}/{{ app_root_dir }}/artisan migrate --seed"
+      tags: [ 'laravel', 'artisan:migrate' ]

@@ -1,0 +1,5 @@
+---
+http_conf: laravel-app
+http_port: "80"
+http_host: "{{ ansible_facts.eth0.ipv4.address }}"
+document_root: /var/www/html

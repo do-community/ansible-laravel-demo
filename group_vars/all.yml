@@ -1,0 +1,25 @@
+---
+# Initial Server Setup
+remote_user: erika
+
+# MySQL Setup
+mysql_root_password: mYsQLr007P4ssw0rd
+mysql_app_db: travellist
+mysql_app_user: travellist_user
+mysql_app_pass: password
+
+# Web Server Setup
+remote_www_root: /var/www
+app_root_dir: travellist-demo
+document_root: "{{ remote_www_root }}/{{ app_root_dir }}/public"
+
+# Laravel Env Variables
+app_name: Travellist
+app_env: dev
+app_debug: true
+app_url: http://localhost
+db_host: localhost
+db_port: 3306
+db_database: "{{ mysql_app_db }}"
+db_user: "{{ mysql_app_user }}"
+db_pass: "{{ mysql_app_pass }}"
