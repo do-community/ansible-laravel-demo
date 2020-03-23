@@ -3,7 +3,6 @@
   become: true
   tasks:
     - name: Make sure the remote app root exists and has the right permissions
-
       file:
         path: "{{ remote_www_root }}/{{ app_root_dir }}"
         state: directory
@@ -49,10 +48,10 @@
       command: "/usr/bin/php {{ remote_www_root }}/{{ app_root_dir }}/artisan key:generate"
       tags: [ 'laravel', 'artisan:key' ]
 
-    - name: Sets up app storage link
+    - name: Set up app storage link
       command: "/usr/bin/php {{ remote_www_root }}/{{ app_root_dir }}/artisan storage:link"
       tags: [ 'laravel', 'artisan:storage' ]
 
-    - name: Run Migrations + Seeds
+    - name: Run Migrations + Seeders
       command: "/usr/bin/php {{ remote_www_root }}/{{ app_root_dir }}/artisan migrate --seed"
       tags: [ 'laravel', 'artisan:migrate' ]
